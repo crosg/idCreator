@@ -37,7 +37,8 @@ idCreator是我们设计并且开发一个分布式的id生成器。它主要为
 expl:http://10.97.19.58:8988/?type=1 可以使用这样的路径访问id生成器，你会得到一串
 json的响应：{error:0, errorMessage:success, result:4159860000002400},其中result就是你需要的id值  
 
-#Albianj2 文档列表和qq群:  
+#idCreator 文档列表和qq群:  
+[idCreator的设计思路文档] (http://www.94geek.com/2015/idcreator.html "idCreator设计思路文档")  
 qq群：528658887  
 
 # 关于我们：  
