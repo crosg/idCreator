@@ -456,3 +456,18 @@ time_t spx_get_token(){
     time_t base =  spx_mktime(&dt);
     return now -base;
 }
+
+int spx_get_tokendays(){
+    time_t now =  spx_now();
+    struct spx_datetime dt;
+    memset(&dt,0,sizeof(dt));
+    SpxYear(&dt) = 2015;
+    SpxMonth(&dt) = 1;
+    SpxDay(&dt) = 1;
+    SpxHour(&dt)  = 0;
+    SpxMinute(&dt)  = 0;
+    SpxSecond(&dt) = 0;
+    time_t base =  spx_mktime(&dt);
+    return (int) ((now -base) / (24 * 3600));
+}
+

@@ -292,7 +292,7 @@ spx_private void idcreatorDispatcherHandler(struct ev_loop *loop,ev_async *w,int
     type = spx_msg_b2i((uchar_t *) isc->inbuf + SpxMsgHeaderSize);
 
     SpxTypeConvert2(struct IdcreatorConfig,c,isc->c);
-    if(0 > type || 0x3ff < type){
+    if((0x4ff != type) && (0 > type || 0x3ff < type)){
         type = 0x3ff;
     }
 

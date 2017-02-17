@@ -56,6 +56,7 @@
 #include "IdcreatorServerContext.h"
 #include "IdcreatorTcpAccept.h"
 #include "IdcreatorHttpAccept.h"
+#include "IdcreatorStateKeep.h"
 
 
 spx_private void idcreatorRegeditSigle();
@@ -125,6 +126,14 @@ int main(int argc, char **argv) {
         exit(err);
     }
 
+    err = idcreator_statef_open (c);
+    if(0 != err){
+        SpxLog2(log,SpxLogError,err,
+                "create or re-read id state file is fail"
+                "and will exit...");
+        exit(err);
+    }
+
     pthread_t tid = idcreatorMainTcpThreadNew(log,c,&err);
     if(0 != err){
         SpxLog2(log,SpxLogError,err,
@@ -137,7 +146,6 @@ int main(int argc, char **argv) {
             "tracker start over."
             "ip:%s,port:%d",
             c->ip,c->port);
-
 
     pthread_t tid_http = NewIdCreatorHttp(log,c,&err);
     if(0 != err){

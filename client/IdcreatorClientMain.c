@@ -58,7 +58,10 @@ int main(int argc,char **argv) {
     int type = atoi(argv[3]);
     err_t err = 0;
 
-    pthread_t t0 = spx_thread_new(NULL,128 * 1024,callback,&type,&err);
+        u64_t id =  idcreatorClientMakeId(ip,port,type,&err);
+        printf("%ld \n",id);
+
+//    pthread_t t0 = spx_thread_new(NULL,128 * 1024,callback,&type,&err);
     /*
     pthread_t t1 = spx_thread_new(NULL,128 * 1024,callback,&type,&err);
     pthread_t t2 = spx_thread_new(NULL,128 * 1024,callback,&type,&err);
@@ -71,7 +74,7 @@ int main(int argc,char **argv) {
     pthread_t t9 = spx_thread_new(NULL,128 * 1024,callback,&type,&err);
   */
 
-    spx_periodic_sleep(600000,0);
+//    spx_periodic_sleep(600000,0);
     return 0;
 }
 

@@ -53,6 +53,7 @@ extern "C" {
 
 #include "IdcreatorServerContext.h"
 
+
 u64_t IdGenerator(int type, int mid, err_t *err);
 
 #ifdef __cplusplus

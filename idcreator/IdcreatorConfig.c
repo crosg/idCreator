@@ -302,6 +302,28 @@ void idcreatorConfigParser(string_t line,void *config,err_t *err){/*{{{*/
         goto r1;
     }
 
+
+    //id_state_file
+    if(0 == spx_string_casecmp(*kv,"id-state-file")){
+        if(1 == count){
+            c->id_state_file = spx_string_new("/opt/idcreator/id.sf",err);
+            if(NULL == c->id_state_file){
+                SpxLog2(c->log,SpxLogError,*err,\
+                        "alloc default id_state_file is fail.");
+                goto r1;
+            }
+            SpxLogFmt1(c->log,SpxLogWarn,\
+                    "id_state_file use default:%s.",c->id_state_file);
+        }else {
+            c->id_state_file = spx_string_dup(*(kv + 1),err);
+            if(NULL == c->id_state_file){
+                SpxLog2(c->log,SpxLogError,*err,\
+                        "dup the string for id_state_file is fail.");
+            }
+        }
+        goto r1;
+    }
+
     //logprefix
     if(0 == spx_string_casecmp(*kv,"logprefix")){
         if( 1 == count){

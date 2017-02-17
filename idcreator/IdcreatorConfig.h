@@ -62,6 +62,7 @@ extern "C" {
         u32_t serverContextSize;
         string_t logpath;
         string_t logprefix;
+        string_t id_state_file;
         u64_t logsize;
         i32_t loglevel;
         bool_t daemon;

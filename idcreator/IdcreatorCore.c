@@ -50,6 +50,7 @@
 #include "IdcreatorConfig.h"
 #include "IdcreatorServerContext.h"
 #include "IdcreatorProtocol.h"
+#include "IdcreatorStateKeep.h"
 
 
 //static u32_t bitSeed = 0;
@@ -60,6 +61,22 @@ u64_t IdGenerator(int type, int mid, err_t *err){
     u64_t id = 0l;
     time_t token = spx_get_token();
     switch(type){
+//        printf("type:%d \n",type);
+        case 0x4FF ://specific one,for contract in yuewen company
+            {
+                int days =  spx_get_tokendays();
+//                printf("day:%d \n",days);
+                int next = 0;
+                do{
+                    if(10000 <= contract_next)
+                        SpxAtomicVCas(contract_next,10000,0);
+                    next = SpxAtomicLazyVIncr(contract_next);
+                } while(10000 <= contract_next);
+                idcreator_statf_sync(next);
+                id =(u64_t)  (days * pow(10,5) + next * 10 + mid);
+//                printf("id:%ld \n",id);
+                break;
+            }
         case 0://book
         case 1://author
         case 2: {//configurtion

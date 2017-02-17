@@ -83,6 +83,7 @@ extern "C" {
             );
     time_t spx_get_token();
 
+    int spx_get_tokendays();
 #if __cplusplus
 }
 #endif

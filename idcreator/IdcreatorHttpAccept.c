@@ -303,7 +303,8 @@ spx_private void bad_request(int client)/*{{{*/
 {
  char head[1024]={0};
  char tmp[1024]={0};
- char body[1024] = {"<HTML><BODY><P>Your browser sent a bad request, such as a POST without a Content-Length.</HTML></BODY>\r\n"};
+ //char body[1024] = {"<HTML><BODY><P>Your browser sent a bad request, such as a POST without a Content-Length.</HTML></BODY>\r\n"};
+ char body[1024] = {"{\"error\":412, \"errorMessage\":\"Bad Request\"}\r\n"};
  int content_length = strlen(body);
 
  snprintf(tmp, sizeof(tmp),"HTTP/1.1 400 BAD REQUEST\r\n");
@@ -351,24 +352,24 @@ spx_private void headers(int client, int content_length)/*{{{*/
 spx_private void unimplemented(int client)/*{{{*/
 {
  char head[1024]={0};
- char body[1024]={0};
+ //char body[1024]={0};
  char buf[4096]={0};
  char tmp[1024]={0};
  int content_length = 0;
 
- snprintf(tmp, sizeof(tmp), "<HTML><HEAD><TITLE>Method Not Implemented\r\n");
- strncpy(body, tmp, strlen(tmp));
- snprintf(tmp, sizeof(tmp), "</TITLE></HEAD>\r\n");
- strncat(body, tmp, strlen(tmp));
- snprintf(tmp, sizeof(tmp), "<BODY><P>HTTP request method not supported.\r\n");
- strncat(body, tmp, strlen(tmp));
- snprintf(tmp, sizeof(tmp), "</BODY></HTML>\r\n");
- strncat(body, tmp, strlen(tmp));
+ //snprintf(tmp, sizeof(tmp), "<HTML><HEAD><TITLE>Method Not Implemented\r\n");
+ //strncpy(body, tmp, strlen(tmp));
+ //snprintf(tmp, sizeof(tmp), "</TITLE></HEAD>\r\n");
+ //strncat(body, tmp, strlen(tmp));
+ //snprintf(tmp, sizeof(tmp), "<BODY><P>HTTP request method not supported.\r\n");
+ //strncat(body, tmp, strlen(tmp));
+ //snprintf(tmp, sizeof(tmp), "</BODY></HTML>\r\n");
+ //strncat(body, tmp, strlen(tmp));
+ char body[1024] = {"{\"error\":404, \"errorMessage\":\"Service Not Found\"}\r\n"};
 
  strncpy(buf, body, strlen(body));
 
  content_length = strlen(body);
-
  headers(client, content_length);
  send(client, body, strlen(body), 0);
 }/*}}}*/
@@ -385,13 +386,8 @@ spx_private err_t Request_GetRequest_ReadRequest(int fd, byte_t *buf, size_t *le
     i64_t rc = 0;
     err_t err = 0;
 
-    printf("READ REQUEST: %d \n", fd);
     while(!Request_GetRequest_ReadRequest_IsEnd(buf, *len)&&(*len <= REQUEST_SIZE)){
-        printf("reading...\n");
         rc = read(fd, ((byte_t *) buf) + *len, REQUEST_SIZE);
-        printf("rc:%d errno:%d\n", (int)rc, errno);
-        printf("READ BUF: %s \n", buf);
-        printf("IsEnd:%d\n", Request_GetRequest_ReadRequest_IsEnd(buf, *len));
         if(0 > rc){
             err = errno;
             break;
@@ -664,10 +660,8 @@ spx_private void Request(EV_P_ ev_async *watcher, int revents){/*{{{*/
         RegisterAsyncWatcher(&mtr_ctx->async_watcher, ParserRequest, mtr_ctx);
         ev_async_start(loop, &mtr_ctx->async_watcher);
         ev_async_send(loop, &mtr_ctx->async_watcher);
-        printf("buf:%s\n",mtr_ctx->request);
         return;
     }else{
-        printf("EAGAIN");
         if(EAGAIN == err || EWOULDBLOCK == err || EINTR == err) {
                 ev_once(loop, mtr_ctx->fd, EV_READ, mtr_ctx->timeout, Request_GetRequest, mtr_ctx);
                 return;
@@ -736,16 +730,13 @@ spx_private void ParserRequest(EV_P_ ev_async *watcher, int revents){/*{{{*/
         SpxLog1(mtr_log, SpxLogError, "ParserRequest mtr_ctx is NULL");
         return;
     }
-    printf("\n----------------CLIENT:%d xxxxxxxxxxxxxxxxxx CTX:%d-----------------------\n", mtr_ctx->fd, GetCTXCount());
 
    int client_sock = mtr_ctx->fd;
    size_t i = 0, j = 0;
    char *buf = (char *)mtr_ctx->request;
    char method[255] = {0};
    char url[1024]= {0};
-   //char path[1024];
 
-   printf("%s\n",buf);
    if(mtr_ctx->req_len == 0){
         CloseCTX(mtr_ctx);
         SpxLog1(mtr_log, SpxLogError, "Client Socket is closed");
@@ -759,8 +750,9 @@ spx_private void ParserRequest(EV_P_ ev_async *watcher, int revents){/*{{{*/
 
    method[i] = '\0';
 
-   if(strcasecmp(method, "GET") && strcasecmp(method, "POST")){
+   if(0 == strcasecmp(method, "POST")){
        RequestException(mtr_ctx, unimplemented);
+       return ;
    }
 
    i = 0;
@@ -826,6 +818,7 @@ spx_private void ParserRequest(EV_P_ ev_async *watcher, int revents){/*{{{*/
 
    if(0 == strcasecmp(method, "POST")){
        RequestException(mtr_ctx, unimplemented);
+       return;
    }
 
    RequestException(mtr_ctx, bad_request);
@@ -885,13 +878,13 @@ spx_private void ydb_tracker_monitor_socket_response(EV_P_ ev_async *watcher, in
     char result[ELEMENT_SIZE];
 
     strncpy(ret_json, "{", 1);
-    snprintf(errorNo, ELEMENT_SIZE, "error:%d, ", err);
+    snprintf(errorNo, ELEMENT_SIZE, "\"error\":%d,", err);
     strncat(ret_json, errorNo, strlen(errorNo));
 
-    snprintf(errorNo, ELEMENT_SIZE, "errorMessage:%s, ", msg);
+    snprintf(errorNo, ELEMENT_SIZE, "\"errorMessage\":\"%s\",", msg);
     strncat(ret_json, errorNo, strlen(errorNo));
 
-    snprintf(result, ELEMENT_SIZE, "result:%llu", (unsigned long long)id);
+    snprintf(result, ELEMENT_SIZE, "\"result\":%llu", (unsigned long long)id);
     strncat(ret_json, result, strlen(result));
     strncat(ret_json, "}\r\n", 1);
 
