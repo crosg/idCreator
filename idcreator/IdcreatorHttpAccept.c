@@ -192,7 +192,9 @@ spx_private struct monitor_http_context* CTXPop(){/*{{{*/
     struct monitor_http_context *mtr_ctx = mtr_ctx_top;
     if(NULL != mtr_ctx){
         mtr_ctx_top = mtr_ctx->p_preCTX;
-        mtr_ctx_top->p_nextCTX = NULL;
+        if (mtr_ctx_top != NULL){
+            mtr_ctx_top->p_nextCTX = NULL;
+        }
         mtr_ctx->p_preCTX = NULL;
     }
 
@@ -387,6 +389,12 @@ spx_private err_t Request_GetRequest_ReadRequest(int fd, byte_t *buf, size_t *le
     err_t err = 0;
 
     while(!Request_GetRequest_ReadRequest_IsEnd(buf, *len)&&(*len <= REQUEST_SIZE)){
+        if (*len >= REQUEST_SIZE){
+            err = -1;
+            SpxLogFmt1(mtr_log, SpxLogError, "request buffer is out of range %d\n", REQUEST_SIZE);
+            break;
+        }
+
         rc = read(fd, ((byte_t *) buf) + *len, REQUEST_SIZE);
         if(0 > rc){
             err = errno;
