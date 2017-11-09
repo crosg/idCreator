@@ -120,6 +120,12 @@ void *idcreatorConfigInit(SpxLogDelegate *log,err_t *err){/*{{{*/
                 "new the config is fail.");
         return NULL;
     }
+
+    //web server
+    c->new_http_port = 9999; 
+    c->retry_times = 3;
+    c->context_pool_size = 128;
+
     c->log = log;
     c->port = 9048;
     c->connectTimeout = 3;
@@ -211,6 +217,51 @@ void idcreatorConfigParser(string_t line,void *config,err_t *err){/*{{{*/
         goto r1;
     }
 
+    /*
+     *web server
+     */
+    //new_http_port
+    if(0 == spx_string_casecmp(*kv,"new_http_port")){
+        if(1 == count){
+            SpxLogFmt1(c->log,SpxLogWarn,"the new_http_port is use default:%d.",c->new_http_port);
+            goto r1;
+        }
+        i32_t new_http_port = strtol(*(kv + 1),NULL,10);
+        if(ERANGE == new_http_port) {
+            SpxLog1(c->log,SpxLogError,"bad the configurtion item of new_http_port.");
+            goto r1;
+        }
+        c->new_http_port = new_http_port;
+        goto r1;
+    }
+
+    if(0 == spx_string_casecmp(*kv,"retry_times")){
+        if(1 == count){
+            SpxLogFmt1(c->log,SpxLogWarn,"the retry_times is use default:%d.",c->retry_times);
+            goto r1;
+        }
+        i32_t retry_times = strtol(*(kv + 1),NULL,10);
+        if(ERANGE == retry_times) {
+            SpxLog1(c->log,SpxLogError,"bad the configurtion item of retry_times.");
+            goto r1;
+        }
+        c->retry_times = retry_times;
+        goto r1;
+    }
+
+    if(0 == spx_string_casecmp(*kv,"context_pool_size")){
+        if(1 == count){
+            SpxLogFmt1(c->log,SpxLogWarn,"the context_pool_size is use default:%d.",c->context_pool_size);
+            goto r1;
+        }
+        i32_t context_pool_size = strtol(*(kv + 1),NULL,10);
+        if(ERANGE == context_pool_size) {
+            SpxLog1(c->log,SpxLogError,"bad the configurtion item of context_pool_size.");
+            goto r1;
+        }
+        c->context_pool_size = context_pool_size;
+        goto r1;
+    }
 
     //connectTimeout
     if(0 == spx_string_casecmp(*kv,"connectTimeout")){

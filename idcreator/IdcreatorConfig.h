@@ -57,6 +57,12 @@ extern "C" {
         string_t ip;
         int port;
         int http_port;
+
+        //web server
+        int new_http_port;
+        int retry_times;
+        int context_pool_size;
+
         u32_t connectTimeout;
         u64_t stackSize;
         u32_t serverContextSize;
