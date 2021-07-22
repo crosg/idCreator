@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: ydb_tracker_monitor.h
     > Author: shuaixiang
-    > Mail: shuaixiang@yuewen.com
+    > Mail: 
     > Created Time: Fri 27 Nov 2015 08:11:59 AM UTC
  ************************************************************************/
 #ifndef _YDB_TRACKER_MONITOR_H_

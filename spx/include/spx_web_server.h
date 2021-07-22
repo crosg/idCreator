@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: spx_web_server.h
     > Author: shuaixiang
-    > Mail: shuaixiang@yuewen.com
+    > Mail: 
     > Created Time: Fri 27 Nov 2015 08:11:59 AM UTC
  ************************************************************************/
 #ifndef SPX_WEB_SERVER_H
